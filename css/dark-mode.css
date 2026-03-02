@@ -1,0 +1,37 @@
+﻿/* Dark Mode Variables */
+body.dark-mode {
+    --primary-color: #f8f9fa;
+    --secondary-color: #adb5bd;
+    --accent-color: #4dabf7;
+    --bg-color: #1a1a1a;
+    --text-color: #f8f9fa;
+    --card-bg: #2d2d2d;
+    --border-color: #404040;
+}
+
+body.dark-mode .navbar {
+    background-color: #2d2d2d;
+}
+
+body.dark-mode .product-card {
+    background-color: #2d2d2d;
+}
+
+body.dark-mode .auth-container {
+    background-color: #2d2d2d;
+}
+
+body.dark-mode input,
+body.dark-mode select {
+    background-color: #1a1a1a;
+    color: var(--text-color);
+    border-color: #404040;
+}
+
+body.dark-mode .cart-items {
+    background-color: #2d2d2d;
+}
+
+body.dark-mode .cart-summary {
+    background-color: #2d2d2d;
+}

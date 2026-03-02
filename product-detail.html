@@ -1,0 +1,205 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Krist - Product Details</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/dark-mode.css">
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar">
+        <div class="container">
+            <div class="logo">
+                <a href="index.html">Krist</a>
+            </div>
+            <div class="hamburger">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+            <div class="nav-links">
+                <a href="index.html">Home</a>
+                <a href="index.html#products">Shop</a>
+                <a href="about.html">About</a>
+                <a href="contact.html">Contact</a>
+            </div>
+            <div class="nav-icons">
+                <a href="cart.html" class="icon-link">
+                    🛒
+                    <span class="badge" id="cart-badge">0</span>
+                </a>
+                <a href="wishlist.html" class="icon-link">
+                    ♡
+                    <span class="badge" id="wishlist-badge">0</span>
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Product Detail Section -->
+    <section class="product-detail-section">
+        <div class="container">
+            <div class="breadcrumb">
+                <a href="index.html">Home</a> > <a href="index.html#products">Shop</a> > <span id="product-name-breadcrumb">Product</span>
+            </div>
+            
+            <div class="product-detail-container" id="product-detail-container">
+                <!-- Product details will be rendered by JavaScript -->
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3>Krist</h3>
+                    <p>Your one-stop shop for fashion and accessories.</p>
+                </div>
+                <div class="footer-section">
+                    <h3>Quick Links</h3>
+                    <ul>
+                        <li><a href="index.html">Home</a></li>
+                        <li><a href="index.html#products">Shop</a></li>
+                        <li><a href="about.html">About</a></li>
+                        <li><a href="contact.html">Contact</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h3>Categories</h3>
+                    <ul>
+                        <li><a href="#">Men</a></li>
+                        <li><a href="#">Women</a></li>
+                        <li><a href="#">Kids</a></li>
+                        <li><a href="#">Accessories</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                &copy; 2024 Krist. All Rights Reserved.
+            </div>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="js/utils.js"></script>
+    <script src="js/theme.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/products.js"></script>
+    <script src="js/cart.js"></script>
+    <script src="js/wishlist.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            updateBadges();
+
+            const urlParams = new URLSearchParams(window.location.search);
+            const productId = parseInt(urlParams.get('id'));
+            if (!productId) {
+                window.location.href = 'index.html';
+                return;
+            }
+
+            const product = products.find(p => p.id === productId);
+            if (!product) {
+                window.location.href = 'index.html';
+                return;
+            }
+
+            document.getElementById('product-name-breadcrumb').textContent = product.name;
+            renderProductDetail(product);
+        });
+
+        function renderProductDetail(product) {
+            const container = document.getElementById('product-detail-container');
+            const discount = product.originalPrice ?
+                Math.round(((product.originalPrice - product.price) / product.originalPrice) * 100) : 0;
+
+            let colorsHTML = '';
+            if (product.colors && product.colors.length) {
+                colorsHTML = '<div class="option-group"><h3>Color</h3><div class="color-options">';
+                product.colors.forEach(color => {
+                    colorsHTML += `<button class="color-btn" style="background-color: ${color}" onclick="selectColor(this)"></button>`;
+                });
+                colorsHTML += '</div></div>';
+            }
+
+            let sizesHTML = '';
+            if (product.sizes && product.sizes.length) {
+                sizesHTML = '<div class="option-group"><h3>Size</h3><div class="size-options">';
+                product.sizes.forEach(size => {
+                    sizesHTML += `<button class="size-btn" onclick="selectSize(this)">${size}</button>`;
+                });
+                sizesHTML += '</div></div>';
+            }
+
+            container.innerHTML = `
+            <div class="product-detail-image">
+                <img src="${product.image}" alt="${product.name}" onerror="this.src='https://via.placeholder.com/600x400?text=No+Image'">
+            </div>
+            <div class="product-detail-info">
+                <h1>${product.name}</h1>
+                <div class="product-detail-price">
+                    $${product.price.toFixed(2)}
+                    ${discount ? `<span class="discount">-${discount}%</span>` : ''}
+                </div>
+                <div class="product-detail-rating">
+                    ${generateRating(product.rating)} (${product.rating})
+                </div>
+                <div class="product-detail-description">
+                    ${product.description}
+                </div>
+                <div class="product-detail-options">
+                    ${colorsHTML}
+                    ${sizesHTML}
+                </div>
+                <div class="product-detail-actions">
+                    <button class="add-to-cart-detail" onclick="addToCart(${product.id})">
+                        Add to Cart
+                    </button>
+                    <button class="add-to-wishlist-detail" onclick="addToWishlist(${product.id})">
+                        Add to Wishlist
+                    </button>
+                </div>
+                <div class="product-tabs">
+                    <div class="tab-headers">
+                        <button class="tab-header active" onclick="showTab('description', event)">Description</button>
+                        <button class="tab-header" onclick="showTab('additional', event)">Additional Information</button>
+                        <button class="tab-header" onclick="showTab('reviews', event)">Reviews</button>
+                    </div>
+                    <div class="tab-content" id="tab-content">
+                        It is a long established fact that a reader will be distracted by the readable content of a page when looking at its layout.
+                    </div>
+                </div>
+            </div>
+            `;
+        }
+
+        function selectColor(btn) {
+            document.querySelectorAll('.color-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+        }
+
+        function selectSize(btn) {
+            document.querySelectorAll('.size-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+        }
+
+        function showTab(tab, event) {
+            document.querySelectorAll('.tab-header').forEach(h => h.classList.remove('active'));
+            event.target.classList.add('active');
+
+            const tabContent = document.getElementById('tab-content');
+            if (tab === 'description') {
+                tabContent.textContent = 'It is a long established fact that a reader will be distracted by the readable content of a page when looking at its layout.';
+            } else if (tab === 'additional') {
+                tabContent.innerHTML = '<ul><li>Material: Premium Quality</li><li>Care: Dry Clean Only</li><li>Fit: Regular Fit</li></ul>';
+            } else if (tab === 'reviews') {
+                tabContent.innerHTML = 'No reviews yet. Be the first to review this product!';
+            }
+        }
+    </script>
+</body>
+</html>
